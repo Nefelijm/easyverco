@@ -3,11 +3,12 @@
 	padding: 0;
 }
 
-
 #map {
   height: 400px;
   width: 40%;
 }
+
+/*fondo*/
 .bg-container{
 background-image: url('http://www.rentmarch.com/files/category/header/rent-bikes-mallorca-11-2.jpg');
 background-repeat: no-repeat;
