@@ -4,86 +4,88 @@ function initMap() {
   let icon = 'assets/bicicleta.png';
   let gmarker, latitude, longitude;
   let location = {
-    lat: -12.1358805,
-    lng: -77.0074234};// Peru;
+    lat: -12.026733806103568,
+    lng: -76.98777915};// Peru;
+
   let objConfig = {
-    Zoom: 18,
+    Zoom: 8,
     center: location
   };
   // Agregamos el nuevo objeto de mapas para crearlo en el div map
-  let gMap = new google.maps.Map(document.getElementById('map'), objConfig);
-
-  // Creando funcion para encontrar mi ubicacion
-  function search() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(myUbication, error);
-    }
-  }
+  let map = new google.maps.Map(document.getElementById('map'), objConfig);
 
 
   let myUbication = function(position) {
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
     // Agregando marcador (la propiedad position define la posicion de marcador)
-    let gmarker = new google.maps.Marker({    
+    gmarker = new google.maps.Marker({
       position: location,
-      map: gMap,
+      map: map,
       icon: icon,
       animation: google.maps.Animation.DROP, // animar un marcador
       title: 'Usted esta aqui'
     });  
+        
+    map.setZoom(18);// Acercamos al mapa
+    map.setCenter(location);// Asignamos un nuevo centro del mapa
   };
 
-
+  // Si encontramos algun problema se activa la funcion error
   let error = function(error) {
-    window.alert('No podemos ubicarlo');
+    window.alert('No se ha encontrado tu localizacion localización');
   };
+
+  // Funcion buscar se ejecutara cuando se de el evento load
+  function search() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(myUbication, error);
+    }
+  }
 
   // llamando a los elementos del  DOM
   let start = document.getElementById('origin');
   let destination = document.getElementById('destination');
-
-  // // Autocompletando
-  // new google.maps.places.Autocomplete(start);
-  // new google.maps.places.Autocomplete(destination);
-
-
-  // Rutas
   
-  let objDr = {
-    map: gMap
+  // Autocompletando
+  new google.maps.places.Autocomplete(start);
+  new google.maps.places.Autocomplete(destination);
+
+  // Para trazar una ruta
+
+  let ds = new google.maps.DirectionsService;// Recibe y devuelve el resultado
+  let dr = new google.maps.DirectionsRenderer;// Para administar los resultados
+
+  // Evento para el boton encuentrame
+  document.getElementById('find-me').addEventListener('click', function() {
+    start.value = latitude + ' ' + longitude;
+  });
+
+  let route = function(ds, dr) {
+    // Nos devuelve un objeto
+    var request = {
+      origin: start.value,
+      destination: destination.value,
+      travelMode: 'DRIVING'
+    };
+    ds.route(request, function(result, status) {
+      // Si el status es correcto nos devolvera result
+      if (status === 'OK') {
+        dr.setDirections(result);
+      }
+    });
+
+    // Mapa donde se trazara la ruta
+    dr.setMap(map);    
+    gmarker.setMap(null);
   };
 
-  let objDs = {
-    origin: location,
-    destination: objetInformacion.address,
-    travelMode: google.maps.TravelMode.WALKING
-  };
+  /** ****Eventos********/
 
-  let ds = new google.maps.DirectionsService();// Obtener coordenadas
-  let dr = new google.maps.DirectionsRenderer(objDr);// Traduce las coordenadas a la ruta
-  
-  ds.route(objDs, ruter);
-
-  function ruter(result, status) {
-    if (status === 'ok') {
-      dr.setDirections(result);
-    } else {
-      alert('error');
-    }
-  }
-
-
-  // Agregando eventos
-
-  
+  // Creamos el evento load y llamamos a la funcion buscar
   window.addEventListener('load', search);
-  let ubication = document.getElementById('find-me');
-  let endRoute = document.getElementById('route');
-  ubication.addEventListener('click',function(){
-   start.value = latitude + '' + longitude;
-  })
-  endRoute.addEventListener('click', function(){
-    route ();
-  })
-}
+  // Evento para el boton ruta
+  document.getElementById('route').addEventListener('click', function() {
+    route(ds, dr);
+  });
+};
