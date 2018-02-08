@@ -1,7 +1,8 @@
 
 // Inicializando y agregando el mapa
 function initMap() {
-  
+  let icon = 'assets/bicicleta.png';
+  let gmarker, latitude, longitude;
   let location = {
     lat: -12.1358805,
     lng: -77.0074234};// Peru;
@@ -11,38 +12,43 @@ function initMap() {
   };
   // Agregamos el nuevo objeto de mapas para crearlo en el div map
   let gMap = new google.maps.Map(document.getElementById('map'), objConfig);
-  
-  // Agregando marcador (la propiedad position define la posicion de marcador)
-  var objConfigMarker = {
-    position: location,
-    map: gMap,
-    animation: google.maps.Animation.DROP, // animar un marcador
-    title: 'Usted esta aqui'
-  };
-  let gmarker = new google.maps.Marker(objConfigMarker);
 
-
-  // Utilizamos el objeto gcoders para traducir una direccion a una coordenada de google maps 
-  let gCoder = new google.maps.Geocoder();
-  // Informacion que ingresa
-  let objetInformacion = {
-    address: 'Plaza de armas, Santiago de surco'
-  };
-  // Funcion geocod con dos para metros
-  gCoder.geocode(objetInformacion, funCoder);
-  // Funcion de respuesta
-  function funCoder(datos) {
-    let coordinates = datos[0].geometry.location; // Es como un objeto location      
-    let config = {
-      map: gMap,
-      animation: google.maps.Animation.DROP,
-      position: coordinates,
-      title: 'Partida'
-    };
-    let gMarkerdv = new google.maps.Marker(config);
-    // Agregando icono para los marcadores
-    // gMarkerdv.setIcon('icono local');
+  // Creando funcion para encontrar mi ubicacion
+  function search() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(myUbication, error);
+    }
   }
+
+
+  let myUbication = function(position) {
+    latitude = position.coords.latitude;
+    longitude = position.coords.longitude;
+    // Agregando marcador (la propiedad position define la posicion de marcador)
+    let gmarker = new google.maps.Marker({    
+      position: location,
+      map: gMap,
+      icon: icon,
+      animation: google.maps.Animation.DROP, // animar un marcador
+      title: 'Usted esta aqui'
+    });  
+  };
+
+
+  let error = function(error) {
+    window.alert('No podemos ubicarlo');
+  };
+
+  // llamando a los elementos del  DOM
+  let start = document.getElementById('origin');
+  let destination = document.getElementById('destination');
+
+  // // Autocompletando
+  // new google.maps.places.Autocomplete(start);
+  // new google.maps.places.Autocomplete(destination);
+
+
+  // Rutas
   
   let objDr = {
     map: gMap
@@ -66,4 +72,18 @@ function initMap() {
       alert('error');
     }
   }
+
+
+  // Agregando eventos
+
+  
+  window.addEventListener('load', search);
+  let ubication = document.getElementById('find-me');
+  let endRoute = document.getElementById('route');
+  ubication.addEventListener('click',function(){
+   start.value = latitude + '' + longitude;
+  })
+  endRoute.addEventListener('click', function(){
+    route ();
+  })
 }
