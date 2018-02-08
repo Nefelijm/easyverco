@@ -6,5 +6,13 @@
 
 #map {
   height: 400px;
-  width: 70%;
+  width: 40%;
+}
+.bg-container{
+background-image: url('http://www.rentmarch.com/files/category/header/rent-bikes-mallorca-11-2.jpg');
+background-repeat: no-repeat;
+background-position: center;
+background-size: cover;
+height: 100vh;
+
 }
