@@ -1,9 +1,12 @@
 
 // Inicializando y agregando el mapa
 function initMap() {
-  let location = { lat: -12.0431800, lng: -77.0282400};// Peru;
+  
+  let location = {
+    lat: -12.1358805,
+    lng: -77.0074234};// Peru;
   let objConfig = {
-    Zoom: 15,
+    Zoom: 18,
     center: location
   };
   // Agregamos el nuevo objeto de mapas para crearlo en el div map
@@ -19,25 +22,48 @@ function initMap() {
   let gmarker = new google.maps.Marker(objConfigMarker);
 
 
-  //Utilizamos el objeto gcoders para traducir una direccion a una coordenada de google maps 
+  // Utilizamos el objeto gcoders para traducir una direccion a una coordenada de google maps 
   let gCoder = new google.maps.Geocoder();
-  //Informacion que ingresa
+  // Informacion que ingresa
   let objetInformacion = {
-    address: 'Benavide 1180,Miraflore,lima'
+    address: 'Plaza de armas, Santiago de surco'
   };
-  //Funcion geocod con dos para metros
+  // Funcion geocod con dos para metros
   gCoder.geocode(objetInformacion, funCoder);
-  //Funcion de respuesta
+  // Funcion de respuesta
   function funCoder(datos) {
     let coordinates = datos[0].geometry.location; // Es como un objeto location      
-    var config = {
+    let config = {
       map: gMap,
       animation: google.maps.Animation.DROP,
       position: coordinates,
-      title:'Partida'
+      title: 'Partida'
     };
     let gMarkerdv = new google.maps.Marker(config);
-    //Agregando icono para los marcadores
-        gMarkerdv.setIcon('icono local');
+    // Agregando icono para los marcadores
+    // gMarkerdv.setIcon('icono local');
+  }
+  
+  let objDr = {
+    map: gMap
+  };
+
+  let objDs = {
+    origin: location,
+    destination: objetInformacion.address,
+    travelMode: google.maps.TravelMode.WALKING
+  };
+
+  let ds = new google.maps.DirectionsService();// Obtener coordenadas
+  let dr = new google.maps.DirectionsRenderer(objDr);// Traduce las coordenadas a la ruta
+  
+  ds.route(objDs, ruter);
+
+  function ruter(result, status) {
+    if (status === 'ok') {
+      dr.setDirections(result);
+    } else {
+      alert('error');
+    }
   }
 }
